@@ -1,21 +1,20 @@
 package com.example.newmovieapp.di
 
+import com.example.moviesap.BuildConfig
 import com.example.newmovieapp.data.remote.PostsApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
+
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-
-    private const val BASE_URL = "https://jsonplaceholder.typicode.com/"
 
     @Provides
     @Singleton
@@ -30,7 +29,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(client: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(BuildConfig.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()
@@ -42,4 +41,3 @@ object NetworkModule {
         return retrofit.create(PostsApi::class.java)
     }
 }
-

@@ -13,8 +13,5 @@ interface PostsApi {
     @POST("posts")
     suspend fun createPost(@Body post: PostDto): PostDto
 
-    object BASE_URL{
-        const val BASE_URL = "https://jsonplaceholder.typicode.com/"
 
-    }
 }
