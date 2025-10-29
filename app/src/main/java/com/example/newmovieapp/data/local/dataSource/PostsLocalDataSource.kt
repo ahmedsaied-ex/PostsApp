@@ -26,11 +26,5 @@ class PostsLocalDataSource @Inject constructor(
         }
     }
 
-    suspend fun clearAll() {
-        try {
-            postDao.clearAll()
-        } catch (e: Exception) {
-            throw Exception("Database error clearing table: ${e.localizedMessage}")
-        }
-    }
+
 }

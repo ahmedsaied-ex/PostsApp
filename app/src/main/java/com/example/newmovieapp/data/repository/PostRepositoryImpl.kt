@@ -39,8 +39,8 @@ class PostRepositoryImpl @Inject constructor(
         try {
             // Create post on server
             val response = remoteDataSource.createPost(post.toPostDto())
-
-            // Convert and insert locally
+            
+            // to add it by (-ve )value to by in the first row :)
             val savedPost = response.toPostEntity().copy(id =((System.currentTimeMillis() % Int.MAX_VALUE).toInt()) * -1 )
             localDataSource.insertPost(savedPost)
 

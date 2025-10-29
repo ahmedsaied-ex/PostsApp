@@ -8,6 +8,8 @@ import com.example.newmovieapp.data.local.dataSource.PostsLocalDataSource
 import com.example.newmovieapp.data.local.model.PostEntity
 import com.example.newmovieapp.data.mapper.toPostEntity
 import com.example.newmovieapp.data.remote.dataSource.PostsRemoteDataSource
+import retrofit2.HttpException
+import java.io.IOException
 import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class)
@@ -30,12 +32,18 @@ class PostsRemoteMediator @Inject constructor(
                 }
             }
 
-            val posts = remoteDataSource.getPosts(page, state.config.pageSize)
-            if (loadType == LoadType.REFRESH) localDataSource.clearAll()
-            localDataSource.insertPosts(posts.map { it.toPostEntity() })
+            val remotePosts = remoteDataSource.getPosts(page, state.config.pageSize)
+            if (remotePosts.isNotEmpty()) {
 
-            MediatorResult.Success(endOfPaginationReached = posts.isEmpty())
-        } catch (e: Exception) {
+                localDataSource.insertPosts(remotePosts.map { it.toPostEntity() })
+            }
+            MediatorResult.Success(endOfPaginationReached = remotePosts.isEmpty())
+        } catch (e: IOException) {
+            // network failure (e.g. no internet)
+            MediatorResult.Error(e)
+        } catch (e: HttpException) {
+            MediatorResult.Error(e)
+        }catch (e: Exception) {
             MediatorResult.Error(e)
         }
     }
