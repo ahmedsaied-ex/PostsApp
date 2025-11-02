@@ -29,7 +29,6 @@ import com.example.newmovieapp.presentation.components.PostsContent
 fun SearchScreen() {
     Box(
         Modifier
-            .windowInsetsPadding(WindowInsets.statusBars)
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
@@ -41,7 +40,6 @@ fun SearchScreen() {
 fun ProfileScreen() {
     Box(
         Modifier
-            .windowInsetsPadding(WindowInsets.statusBars)
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {

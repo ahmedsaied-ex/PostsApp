@@ -1,5 +1,6 @@
 package com.example.newmovieapp.data.remote
 
+import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
@@ -40,10 +41,13 @@ class PostsRemoteMediator @Inject constructor(
             MediatorResult.Success(endOfPaginationReached = remotePosts.isEmpty())
         } catch (e: IOException) {
             // network failure (e.g. no internet)
+            Log.e("PostsRemoteMediator", "IOException",e)
             MediatorResult.Error(e)
         } catch (e: HttpException) {
+            Log.e("PostsRemoteMediator", "HttpException",e)
             MediatorResult.Error(e)
         }catch (e: Exception) {
+            Log.e("PostsRemoteMediator", "Exception",e)
             MediatorResult.Error(e)
         }
     }
