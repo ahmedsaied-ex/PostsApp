@@ -18,7 +18,7 @@ class PostViewModel @Inject constructor(
     private val createPostUseCase: CreatePostUseCase
 ) : ViewModel() {
 
-    val posts = getPostsUseCase().cachedIn(viewModelScope)
+    val posts = getPostsUseCase().cachedIn(viewModelScope) // كده الداتا هاتفضل موجوده طزل ما ال ViewModel عايش
 
     private val _createPostState = MutableStateFlow<Resource<PostEntity>>(Resource.Idle())
     val createPostState: StateFlow<Resource<PostEntity>> = _createPostState
