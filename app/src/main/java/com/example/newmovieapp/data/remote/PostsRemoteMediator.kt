@@ -1,5 +1,6 @@
 package com.example.newmovieapp.data.remote
 
+import android.net.Network
 import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
@@ -9,6 +10,8 @@ import com.example.newmovieapp.data.local.dataSource.PostsLocalDataSource
 import com.example.newmovieapp.data.local.model.PostEntity
 import com.example.newmovieapp.data.mapper.toPostEntity
 import com.example.newmovieapp.data.remote.dataSource.PostsRemoteDataSource
+import kotlinx.coroutines.delay
+import org.chromium.net.NetworkException
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
@@ -35,15 +38,19 @@ class PostsRemoteMediator @Inject constructor(
             val remotePosts = remoteDataSource.getPosts(page, state.config.pageSize)
             if (remotePosts.isNotEmpty()) {
                 localDataSource.insertPosts(remotePosts.map { it.toPostEntity() })
-
             }
             MediatorResult.Success(endOfPaginationReached = remotePosts.isEmpty())
 
         } catch (e: IOException) {
             // network failure (e.g. no internet)
             Log.e("PostsRemoteMediator", "IOException", e)
+            delay(30000)
             MediatorResult.Error(e)
-        } catch (e: HttpException) {
+        }catch (e: NetworkException){
+            Log.e("PostsRemoteMediator", "NetworkException", e)
+            MediatorResult.Error(e)
+        }
+        catch (e: HttpException) {
             Log.e("PostsRemoteMediator", "HttpException", e)
             MediatorResult.Error(e)
         } catch (e: Exception) {

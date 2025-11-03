@@ -1,7 +1,9 @@
 package com.example.newmovieapp.data.remote.dataSource
 
+import android.net.http.NetworkException
 import com.example.newmovieapp.data.remote.PostDto
 import com.example.newmovieapp.data.remote.PostsApi
+
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject

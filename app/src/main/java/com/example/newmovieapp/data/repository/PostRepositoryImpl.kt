@@ -3,6 +3,7 @@ package com.example.newmovieapp.data.repository
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import com.example.newmovieapp.common.Constants
 import com.example.newmovieapp.common.Resource
 import com.example.newmovieapp.data.domain.repository.PostRepository
 import com.example.newmovieapp.data.local.dataSource.PostsLocalDataSource
@@ -27,7 +28,7 @@ class PostRepositoryImpl @Inject constructor(
     @OptIn(ExperimentalPagingApi::class)
     override fun getPagedPosts(): Pager<Int, PostEntity> {
         return Pager(
-            config = PagingConfig(pageSize = 10, enablePlaceholders = false),
+            config = PagingConfig(pageSize = Constants.PAGES, enablePlaceholders = false),
             pagingSourceFactory = { localDataSource.getAllPosts() },
             remoteMediator = PostsRemoteMediator(remoteDataSource, localDataSource)
         )
