@@ -1,11 +1,15 @@
 package com.example.newmovieapp.data.repository
 
+import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.paging.RemoteMediator
 import com.example.newmovieapp.common.Constants
 import com.example.newmovieapp.common.Resource
 import com.example.newmovieapp.data.domain.repository.PostRepository
+import com.example.newmovieapp.data.domain.repository.PostsLocalSource
+import com.example.newmovieapp.data.domain.repository.PostsRemoteSource
 import com.example.newmovieapp.data.local.dataSource.PostsLocalDataSource
 import com.example.newmovieapp.data.local.model.PostEntity
 import com.example.newmovieapp.data.mapper.toPostDto
@@ -19,34 +23,34 @@ import java.io.IOException
 
 
 import javax.inject.Inject
-
-class PostRepositoryImpl @Inject constructor(
-    private val remoteDataSource: PostsRemoteDataSource,
-    private val localDataSource: PostsLocalDataSource
+class PostRepositoryImpl @OptIn(ExperimentalPagingApi::class)
+@Inject constructor(
+    private val remoteSource: PostsRemoteSource,
+    private val localSource: PostsLocalSource,
+    // inject mediator (provided by DI). Use RemoteMediator<Int, PostEntity> for flexibility.
+    private val remoteMediator: RemoteMediator<Int, PostEntity>
 ) : PostRepository {
 
     @OptIn(ExperimentalPagingApi::class)
     override fun getPagedPosts(): Pager<Int, PostEntity> {
         return Pager(
             config = PagingConfig(pageSize = Constants.PAGES, enablePlaceholders = false),
-            pagingSourceFactory = { localDataSource.getAllPosts() },
-            remoteMediator = PostsRemoteMediator(remoteDataSource, localDataSource)
+            pagingSourceFactory = { localSource.getAllPosts() },
+            remoteMediator = remoteMediator
         )
     }
 
     override suspend fun createPost(post: PostEntity): Flow<Resource<PostEntity>> = flow {
         emit(Resource.Loading())
-
         try {
-            // Create post on server
-            val response = remoteDataSource.createPost(post.toPostDto())
-            
-            // to add it by (-ve )value to by in the first row :)
-            val savedPost = response.toPostEntity().copy(id =((System.currentTimeMillis() % Int.MAX_VALUE).toInt()) * -1 )
-            localDataSource.insertPost(savedPost)
-
+            val response = remoteSource.createPost(post.toPostDto())
+            val savedPost = response.toPostEntity().copy(
+                id = ((System.currentTimeMillis() % Int.MAX_VALUE).toInt()) * -1
+            )
+            localSource.insertPost(savedPost)
             emit(Resource.Success(savedPost))
         } catch (e: IOException) {
+            Log.e("PostRepositoryImplimintation", "tesssssssssssssssssssss1")
             emit(Resource.Error("Network error: ${e.localizedMessage ?: "check your connection"}"))
         } catch (e: HttpException) {
             emit(Resource.Error("Server error: ${e.code()} ${e.message()}"))

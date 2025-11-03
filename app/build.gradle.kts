@@ -13,7 +13,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.moviesap"
+        applicationId = "com.example.newmovieapp"
         minSdk = 24
         targetSdk = 35
         versionCode = 1

@@ -6,6 +6,8 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
+import com.example.newmovieapp.data.domain.repository.PostsLocalSource
+import com.example.newmovieapp.data.domain.repository.PostsRemoteSource
 import com.example.newmovieapp.data.local.dataSource.PostsLocalDataSource
 import com.example.newmovieapp.data.local.model.PostEntity
 import com.example.newmovieapp.data.mapper.toPostEntity
@@ -15,47 +17,41 @@ import org.chromium.net.NetworkException
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
-
 @OptIn(ExperimentalPagingApi::class)
 class PostsRemoteMediator @Inject constructor(
-    private val remoteDataSource: PostsRemoteDataSource,
-    private val localDataSource: PostsLocalDataSource
+    private val remoteSource: PostsRemoteSource,
+    private val localSource: PostsLocalSource
 ) : RemoteMediator<Int, PostEntity>() {
 
-    override suspend fun load(
-        loadType: LoadType, state: PagingState<Int, PostEntity>
-    ): MediatorResult {
-        return try {
+    override suspend fun load(loadType: LoadType, state: PagingState<Int, PostEntity>): MediatorResult {
+        try {
             val page = when (loadType) {
                 LoadType.REFRESH -> 1
-                LoadType.PREPEND -> return MediatorResult.Success(true)
+                LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
                 LoadType.APPEND -> {
                     val lastItem = state.lastItemOrNull()
                     if (lastItem == null) 1 else (lastItem.id / state.config.pageSize) + 1
                 }
             }
+            Log.e("PostsRemoteMediator", "tes44")
 
-            val remotePosts = remoteDataSource.getPosts(page, state.config.pageSize)
+            val remotePosts = remoteSource.getPosts(page, state.config.pageSize)
+            Log.e("PostsRemoteMediator", "tesssssssssssssssssssss1")
             if (remotePosts.isNotEmpty()) {
-                localDataSource.insertPosts(remotePosts.map { it.toPostEntity() })
+                localSource.insertPosts(remotePosts.map { it.toPostEntity() })
             }
-            MediatorResult.Success(endOfPaginationReached = remotePosts.isEmpty())
-
+            Log.e("PostsRemoteMediator", "tes2")
+            return MediatorResult.Success(endOfPaginationReached = remotePosts.isEmpty())
         } catch (e: IOException) {
-            // network failure (e.g. no internet)
+//            delay(30000)
             Log.e("PostsRemoteMediator", "IOException", e)
-            delay(30000)
-            MediatorResult.Error(e)
-        }catch (e: NetworkException){
-            Log.e("PostsRemoteMediator", "NetworkException", e)
-            MediatorResult.Error(e)
-        }
-        catch (e: HttpException) {
+            return MediatorResult.Error(e)
+        } catch (e: HttpException) {
             Log.e("PostsRemoteMediator", "HttpException", e)
-            MediatorResult.Error(e)
+            return MediatorResult.Error(e)
         } catch (e: Exception) {
             Log.e("PostsRemoteMediator", "Exception", e)
-            MediatorResult.Error(e)
+            return MediatorResult.Error(e)
         }
     }
 }

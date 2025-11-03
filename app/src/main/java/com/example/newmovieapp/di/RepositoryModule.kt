@@ -1,11 +1,14 @@
 package com.example.newmovieapp.di
 
 import com.example.newmovieapp.data.domain.repository.PostRepository
+import com.example.newmovieapp.data.domain.repository.PostsLocalSource
+import com.example.newmovieapp.data.domain.repository.PostsRemoteSource
 import com.example.newmovieapp.data.local.PostDao
 import com.example.newmovieapp.data.local.dataSource.PostsLocalDataSource
 import com.example.newmovieapp.data.remote.PostsApi
 import com.example.newmovieapp.data.remote.dataSource.PostsRemoteDataSource
 import com.example.newmovieapp.data.repository.PostRepositoryImpl
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,24 +18,20 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object RepositoryModule {
 
-    @Provides
-    @Singleton
-    fun provideRemoteDataSource(api: PostsApi): PostsRemoteDataSource {
-        return PostsRemoteDataSource(api)
-    }
+    @Module
+    @InstallIn(SingletonComponent::class)
+    abstract class DataSourceBindsModule {
 
-    @Provides
-    @Singleton
-    fun provideLocalDataSource(dao: PostDao): PostsLocalDataSource {
-        return PostsLocalDataSource(dao)
-    }
+        @Binds
+        @Singleton
+        abstract fun bindPostsRemoteSource(
+            impl: PostsRemoteDataSource
+        ): PostsRemoteSource
 
-    @Provides
-    @Singleton
-    fun providePostRepository(
-        remoteDataSource: PostsRemoteDataSource,
-        localDataSource: PostsLocalDataSource
-    ): PostRepository {
-        return PostRepositoryImpl(remoteDataSource, localDataSource)
+        @Binds
+        @Singleton
+        abstract fun bindPostsLocalSource(
+            impl: PostsLocalDataSource
+        ): PostsLocalSource
     }
 }
