@@ -3,6 +3,7 @@ package com.example.newmovieapp.data.remote
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.util.Log
 import okhttp3.Interceptor
 import okhttp3.Response
 
@@ -14,6 +15,7 @@ class NetworkConnectionInterceptor(
 
     override fun intercept(chain: Interceptor.Chain): Response {
         if (!isNetworkAvailable()) {
+            Log.d("NetworkConnectionInterceptor", "No internet connection")
             throw IOException("No internet connection")
         }
         return chain.proceed(chain.request())

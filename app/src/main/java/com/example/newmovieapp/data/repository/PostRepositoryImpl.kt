@@ -50,7 +50,7 @@ class PostRepositoryImpl @OptIn(ExperimentalPagingApi::class)
             localSource.insertPost(savedPost)
             emit(Resource.Success(savedPost))
         } catch (e: IOException) {
-            Log.e("PostRepositoryImplimintation", "tesssssssssssssssssssss1")
+            Log.e("NetworkConnectionInterceptor", "repository implementation exception ")
             emit(Resource.Error("Network error: ${e.localizedMessage ?: "check your connection"}"))
         } catch (e: HttpException) {
             emit(Resource.Error("Server error: ${e.code()} ${e.message()}"))

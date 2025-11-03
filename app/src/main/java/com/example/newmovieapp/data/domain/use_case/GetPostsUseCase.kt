@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 class GetPostsUseCase @Inject constructor(  private val repository: PostRepository) {
     operator fun invoke(): Flow<PagingData<PostEntity>> {
-        Log.d("TEST_RELOAD_TIME", "invoke: called")
+        Log.d("NetworkConnectionInterceptor", "invoke: called")
         return repository.getPagedPosts().flow
     }
 }

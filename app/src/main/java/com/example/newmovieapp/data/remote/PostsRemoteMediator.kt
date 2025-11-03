@@ -33,18 +33,18 @@ class PostsRemoteMediator @Inject constructor(
                     if (lastItem == null) 1 else (lastItem.id / state.config.pageSize) + 1
                 }
             }
-            Log.e("PostsRemoteMediator", "tes44")
+            Log.e("NetworkConnectionInterceptor", "mediator before get ")
 
             val remotePosts = remoteSource.getPosts(page, state.config.pageSize)
-            Log.e("PostsRemoteMediator", "tesssssssssssssssssssss1")
+            Log.e("NetworkConnectionInterceptor", "mediator after get")
             if (remotePosts.isNotEmpty()) {
                 localSource.insertPosts(remotePosts.map { it.toPostEntity() })
             }
-            Log.e("PostsRemoteMediator", "tes2")
+            Log.e("NetworkConnectionInterceptor", "mediator after insert")
             return MediatorResult.Success(endOfPaginationReached = remotePosts.isEmpty())
         } catch (e: IOException) {
 //            delay(30000)
-            Log.e("PostsRemoteMediator", "IOException", e)
+            Log.e("NetworkConnectionInterceptor", "Mediator \n IOException", e)
             return MediatorResult.Error(e)
         } catch (e: HttpException) {
             Log.e("PostsRemoteMediator", "HttpException", e)

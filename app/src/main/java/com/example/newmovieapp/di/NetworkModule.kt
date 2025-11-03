@@ -1,6 +1,7 @@
 package com.example.newmovieapp.di
 
 import android.content.Context
+import android.util.Log
 import com.example.moviesap.BuildConfig
 import com.example.newmovieapp.data.remote.PostsApi
 import com.example.newmovieapp.data.remote.NetworkConnectionInterceptor
@@ -9,9 +10,12 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Dns
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.net.Inet4Address
+import java.net.InetAddress
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
@@ -38,13 +42,14 @@ object NetworkModule {
             .addInterceptor(networkConnectionInterceptor)
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
+            .callTimeout(35, TimeUnit.SECONDS) // total cap
             .build()
     }
-
     // ✅ Provide Retrofit instance
     @Provides
     @Singleton
     fun provideRetrofit(client: OkHttpClient): Retrofit {
+        Log.i("NetworkConnectionInterceptor", "Retrofit  "+client.toString())
         return Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
