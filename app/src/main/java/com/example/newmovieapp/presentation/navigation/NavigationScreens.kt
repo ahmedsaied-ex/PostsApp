@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.example.moviesap.R
 import com.example.newmovieapp.common.Resource
 import com.example.newmovieapp.presentation.PostViewModel
 import com.example.newmovieapp.presentation.components.PostsContent
@@ -48,35 +49,30 @@ fun ProfileScreen() {
 }
 
 
+// Define UI states for display
+
+
 @Composable
 fun HomeScreen(
-    modifier: Modifier = Modifier,
     viewModel: PostViewModel = hiltViewModel()
 ) {
     val posts = viewModel.posts.collectAsLazyPagingItems()
     val createPostState by viewModel.createPostState.collectAsState()
     val context = LocalContext.current
 
-    var errorMessage by remember { mutableStateOf<String?>(null) }
-
-
-    LaunchedEffect(createPostState) {
-        when (createPostState) {
-            is Resource.Error -> Toast.makeText(
-                context,
-                createPostState.message ?: "Error creating post",
-                Toast.LENGTH_SHORT
-            ).show()
-
-            is Resource.Success -> createPostState.data?.let {
-                if (it.id != -1)
-                    Toast.makeText(context, "${it.title} added successfully!", Toast.LENGTH_SHORT).show()
+    // handle create post messages
+    LaunchedEffect(Unit) {
+        viewModel.eventFlow.collect { event ->
+            when (event) {
+                is PostViewModel.UiEvent.ShowToast -> {
+                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                }
             }
-
-            else -> Unit
         }
     }
 
+    // handle error from paging
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(posts.loadState) {
         val errorState = when {
@@ -87,14 +83,13 @@ fun HomeScreen(
         }
 
         if (errorState != null && posts.itemCount == 0) {
-            errorMessage = "Error loading posts: ${errorState.error.message}"
+            errorMessage = context.getString(R.string.error_loading_posts)+"${errorState.error.message}"
         } else if (posts.itemCount > 0) {
             errorMessage = null
         }
     }
 
     PostsContent(
-        modifier = modifier,
         posts = posts,
         createPostState = createPostState,
         errorMessage = errorMessage,
@@ -105,6 +100,7 @@ fun HomeScreen(
         onAddPost = { title, body -> viewModel.addPost(title, body) }
     )
 }
+
 
 
 

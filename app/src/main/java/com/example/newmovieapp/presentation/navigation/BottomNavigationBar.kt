@@ -1,36 +1,37 @@
 package com.example.newmovieapp.presentation.navigation
 
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.newmovieapp.data.local.model.BottomNavItem
-import com.example.newmovieapp.presentation.Constants
 
+data class BottomNavItem(
+    val label: String,
+    val icon: ImageVector,
+    val route: Any // ✅ Supports typed destinations
+)
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     val items = listOf(
-        BottomNavItem(Constants.HOME_SCREEN, Icons.Default.Home, "Home"),
-        BottomNavItem(Constants.SEARCH_SCREEN, Icons.Default.Search, "Search"),
-        BottomNavItem(Constants.PROFILE_SCREEN, Icons.Default.Person, "Profile")
+        BottomNavItem("Home", Icons.Default.Home, HomeRoute),
+        BottomNavItem("Search", Icons.Default.Search, SearchRoute),
+        BottomNavItem("Profile", Icons.Default.Person, ProfileRoute)
     )
 
     NavigationBar {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry?.destination?.route
+        val navBackStackEntry = navController.currentBackStackEntryAsState().value
+        val currentDestination = navBackStackEntry?.destination
 
         items.forEach { item ->
+            val selected = currentDestination?.route == item.route::class.qualifiedName
             NavigationBarItem(
-                selected = currentRoute == item.route,
+                selected = selected,
                 onClick = {
                     navController.navigate(item.route) {
                         popUpTo(navController.graph.startDestinationId) { saveState = true }
@@ -39,7 +40,8 @@ fun BottomNavigationBar(navController: NavController) {
                     }
                 },
                 icon = { Icon(item.icon, contentDescription = item.label) },
-                label = { Text(item.label) })
+                label = { Text(item.label) }
+            )
         }
     }
 }

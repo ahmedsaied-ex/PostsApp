@@ -6,3 +6,10 @@ sealed class Resource<T>(val data: T? = null, val message: String? = null) {
     class Loading<T>(data:T?=null): Resource<T>(data)
     class Idle<T> : Resource<T>()
 }
+
+sealed class PostsUiState {
+    object Loading : PostsUiState()
+    object Empty : PostsUiState()
+    data class Error(val message: String) : PostsUiState()
+    object Success : PostsUiState()
+}

@@ -20,8 +20,7 @@ class PostsRemoteMediator @Inject constructor(
 ) : RemoteMediator<Int, PostEntity>() {
 
     override suspend fun load(
-        loadType: LoadType,
-        state: PagingState<Int, PostEntity>
+        loadType: LoadType, state: PagingState<Int, PostEntity>
     ): MediatorResult {
         return try {
             val page = when (loadType) {
@@ -35,22 +34,21 @@ class PostsRemoteMediator @Inject constructor(
 
             val remotePosts = remoteDataSource.getPosts(page, state.config.pageSize)
             if (remotePosts.isNotEmpty()) {
-
                 localDataSource.insertPosts(remotePosts.map { it.toPostEntity() })
+
             }
             MediatorResult.Success(endOfPaginationReached = remotePosts.isEmpty())
+
         } catch (e: IOException) {
             // network failure (e.g. no internet)
-            Log.e("PostsRemoteMediator", "IOException",e)
+            Log.e("PostsRemoteMediator", "IOException", e)
             MediatorResult.Error(e)
         } catch (e: HttpException) {
-            Log.e("PostsRemoteMediator", "HttpException",e)
+            Log.e("PostsRemoteMediator", "HttpException", e)
             MediatorResult.Error(e)
-        }catch (e: Exception) {
-            Log.e("PostsRemoteMediator", "Exception",e)
+        } catch (e: Exception) {
+            Log.e("PostsRemoteMediator", "Exception", e)
             MediatorResult.Error(e)
         }
     }
-
-
 }

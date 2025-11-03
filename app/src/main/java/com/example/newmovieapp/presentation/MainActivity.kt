@@ -12,8 +12,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.newmovieapp.presentation.navigation.BottomNavigationBar
+import com.example.newmovieapp.presentation.navigation.HomeRoute
 import com.example.newmovieapp.presentation.navigation.HomeScreen
+import com.example.newmovieapp.presentation.navigation.ProfileRoute
 import com.example.newmovieapp.presentation.navigation.ProfileScreen
+import com.example.newmovieapp.presentation.navigation.SearchRoute
 import com.example.newmovieapp.presentation.navigation.SearchScreen
 import com.example.newmovieapp.presentation.theme.NewMovieAppTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,12 +42,12 @@ fun MainScreen() {
         bottomBar = { BottomNavigationBar(navController) }) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Constants.HOME_SCREEN,
+            startDestination = HomeRoute,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(Constants.HOME_SCREEN) { HomeScreen() }
-            composable(Constants.SEARCH_SCREEN) { SearchScreen() }
-            composable(Constants.PROFILE_SCREEN) { ProfileScreen() }
+            composable<HomeRoute> { HomeScreen() }
+            composable<ProfileRoute> { ProfileScreen() }
+            composable<SearchRoute> { SearchScreen() }
         }
     }
 }

@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">NewMovieApp</string>
+    <string name="loading_posts">Loading posts...</string>
+    <string name="no_posts_found">No posts found</string>
+    <string name="error_creating_post">Error creating post</string>
+    <string name="added_successfully">added successfully!</string>
+    <string name="error_loading_posts">"Error loading posts: "</string>
+    <string name="post_title">Title</string>
+    <string name="post_body">Body</string>
+    <string name="add_post">Add Post</string>
+    <string name="try_again">Try Again</string>
+    <string name="post_added_successfully">post added successfully</string>
+    <string name="error_loading_more_posts">Error loading more posts</string>
+    <string name="add_new_post">Add New Post</string>
 </resources>
